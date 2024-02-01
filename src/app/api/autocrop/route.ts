@@ -1,5 +1,5 @@
 import jimp from "jimp";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
 type Params = {
@@ -19,14 +19,12 @@ function sameColor(current: number, start: number, treshold=0) {
 }
 
 export async function GET(
-  req: Request,
-  { params }: Params
+  req: NextRequest,
 ) {
    
   if (req.method === 'GET') {
     try {
-        const { args } = params;
-        const imagePath = args[0]
+        const imagePath = req.nextUrl.searchParams.get("image") || ''
 
         const fileName = path.basename(imagePath);
         const image = await jimp.read(imagePath);
