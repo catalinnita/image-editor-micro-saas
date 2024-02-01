@@ -2,19 +2,22 @@ import jimp from "jimp";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
-type Params = {
-  params: { 
-    args: string[]
-  }
+type RGBA = {
+  r: number,
+  g: number,
+  b: number,
+  a: number,
 }
 
-function sameColor(current: number, start: number, treshold=0) {
-  if (current < start - treshold) {
+function sameColor(current: RGBA, start: RGBA, treshold=50) {
+  if (current.r < start.r - treshold || current.g < start.g - treshold || current.b < start.b - treshold ) {
     return false
   }
-  if (current > start + treshold) {
+
+  if (current.r > start.r + treshold || current.g > start.g + treshold || current.b > start.b + treshold) {
     return false
   }
+
   return true
 }
 
@@ -32,34 +35,34 @@ export async function GET(
         const margin = 50
 
         testImage.grayscale()
-        testImage.posterize(5)
+        testImage.posterize(4)
         testImage.contrast(0.3)
 
         const w = testImage.bitmap.width
         const h = testImage.bitmap.height
 
-        const startColor = testImage.getPixelColor(0,0)
+        const startColor = jimp.intToRGBA(testImage.getPixelColor(0,0))
         let xl = 0
         let xr = w
         let yt = 0
         let yb = h
 
         testImage.scan(0, 0, w, h, function (x, y) {
-          const pColor = testImage.getPixelColor(x,y)
+          const pColor = jimp.intToRGBA(testImage.getPixelColor(x,y))
           // xl
-          if (sameColor(pColor, startColor) && ( xl === 0 || x < xl )) {
+          if (!sameColor(pColor, startColor) && ( xl === 0 || x < xl )) {
             xl = x
           }
           // xr
-          if (sameColor(pColor, startColor) && ( xr === w || x > xr )) {
+          if (!sameColor(pColor, startColor) && ( xr === w || x > xr )) {
             xr = x
           }
           // yt
-          if (sameColor(pColor, startColor) && ( yt === 0 || y < yt )) {
+          if (!sameColor(pColor, startColor) && ( yt === 0 || y < yt )) {
             yt = y
           }
           // yb
-          if (sameColor(pColor, startColor) && ( yb === h || y > yb )) {
+          if (!sameColor(pColor, startColor) && ( yb === h || y > yb )) {
             yb = y
           }
         })
