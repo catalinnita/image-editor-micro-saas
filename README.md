@@ -10,6 +10,9 @@ Step 2 - identify objects in images using Tensorflow
 - status: IN PROGRESS
 - TBD
 
+Step 3 - create a micro-saas adding other basic functionality on the chosen solution
+- status: TO BE PLANNED
+
 ## Assumptions and limitations
 - Jimp version will be able to crop images placed on an relatively even background, while Tensorflow object identification promisses to work on any image and even identify multiple objects in the same picture
 - Jimp version will work on node runtime and will be deployed on vercel serverless functions
